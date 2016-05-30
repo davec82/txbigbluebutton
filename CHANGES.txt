@@ -1,0 +1,50 @@
+0.5.1
+-------
+small fix in exception handling
+
+
+0.5.0
+--------
+PEP8 fixes
+Meeting_Setup renamed to MeetingSetup
+reduced code duplication
+
+
+0.4.1
+-------
+small fixes in Type Comparison
+
+0.4.0
+-----
+urllib2 replaced by requests
+pre upload of slides by URL added
+further attribute for recording
+
+
+0.3.0
+------
+extended and refactored meeting_info to get all 0.8 attributes
+API calls for recordings added
+
+
+0.2.1
+-----
+
+Meeting_Setup: logout_url parameter changed from None to ''.
+               This points to the default url given in the config of bigbluebutton.
+
+
+0.2.0
+-----
+Meeting_Setup: logout_url, max_participants, duration and welcome parameter added
+Meeting: end_meeting_url added
+
+0.1.1
+-----
+minor bug fix
+
+0.1.0
+-----
+initial version of bigbluebutton python api with some creation parameters
+based on https://github.com/schallis/django-bigbluebutton 98f2259fa3 by Steve Challis.
+

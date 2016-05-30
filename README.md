@@ -6,8 +6,9 @@ https://bitbucket.org/ReimarBauer/bigbluebutton-python-api by Reimar Bauer.
 It is a wrapper, written in Twisted,  for asynchronous accessing the API of bigbluebutton http://code.google.com/p/bigbluebutton/wiki/API
 
 
-A simple example::
+A simple example:
 
+```
 import uuid
 from txbigbluebutton import MeetingSetup, Meeting
 from twisted.internet import reactor
@@ -64,4 +65,4 @@ if __name__ == '__main__':
     d.addCallback(display)
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
-
+```
