@@ -1,9 +1,9 @@
 # txbigbluebutton
 
-The work of this project is derivated from https://github.com/schallis/django-bigbluebutton 98f2259fa3 by Steve Challis and 
+The work of this project is derivated from https://github.com/schallis/django-bigbluebutton/tree/98f2259fa3 by Steve Challis and
 https://bitbucket.org/ReimarBauer/bigbluebutton-python-api by Reimar Bauer.
 
-It is a wrapper, written in Twisted,  for asynchronous accessing the API of bigbluebutton http://code.google.com/p/bigbluebutton/wiki/API
+It is a wrapper, written in Twisted,  for asynchronous accessing the API of bigbluebutton http://docs.bigbluebutton.org/dev/api.html
 
 
 A simple example:
