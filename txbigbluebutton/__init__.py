@@ -170,7 +170,7 @@ class Meeting(object):
         xml = yield get_xml(self.bbb_api_url, self.salt, call, query)
         defer.returnValue(xml_match(xml, match))
 
-    def join_url(self, meeting_id, name, password):
+    def join_url(self, meeting_id, name, password, optional_params=None):
         """
         generates the url for accessing a meeting
 
@@ -181,13 +181,15 @@ class Meeting(object):
                          If the moderator password is supplied, he will be
                          given moderator status
                          (and the same for attendee password, etc)
+        :param optional_params: optional params used by MConf for example
         """
         call = 'join'
-        query = urlencode((
-            ('fullName', name),
-            ('meetingID', meeting_id),
-            ('password', password),
-        ))
+        params = dict(fullName=name, meetingID=meeting_id,
+                      password=password)
+
+        if optional_params:
+            params.update(optional_params) 
+        query = urlencode((params))
         hashed = api_call(self.salt, query, call)
         return self.bbb_api_url + call + '?' + hashed
 
