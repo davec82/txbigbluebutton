@@ -104,9 +104,7 @@ class MeetingSetup(object):
         creates the meeting
         """
         meeting = Meeting(self.bbb_api_url, self.salt)
-        print "creating meeting"
         is_running = yield meeting.is_running(self.meeting_id)
-        print "is running ", is_running
         if not is_running:
             call = 'create'
             if self.pre_upload_slide is not None:
