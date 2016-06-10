@@ -153,6 +153,15 @@ class Meeting(object):
         self.salt = salt
 
     @defer.inlineCallbacks
+    def check_api(self):
+        """
+        This call  simply checks whether a bigbluebutton instane is reachable.
+
+        """
+        xml = yield get_xml(self.bbb_api_url, self.salt, None, None)
+        defer.returnValue(xml)
+
+    @defer.inlineCallbacks
     def is_running(self, meeting_id):
         """
         This call enables you to simply check on whether or not a meeting is

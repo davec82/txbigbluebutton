@@ -58,8 +58,12 @@ def get_xml(bbb_api_url, salt, call, query, pre_upload_slide=None):
     :param pre_upload_slide: on create a file could be uploaded
     """
 
-    hashed = api_call(salt, query, call)
-    url = bbb_api_url + call + '?' + hashed
+    if call:
+        hashed = api_call(salt, query, call)
+        url = bbb_api_url + call + '?' + hashed
+    else:
+        url = bbb_api_url
+
     if call == "create" and pre_upload_slide is not None:
         xml = ("<?xml version='1.0' encoding='UTF-8'?> <modules> <module name='presentation'> "
                "<document url='%(pre_upload_slide)s'/> </module></modules>" % {"pre_upload_slide": pre_upload_slide})
