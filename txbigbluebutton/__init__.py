@@ -29,7 +29,7 @@ class MeetingSetup(object):
                  moderator_password=None,
                  logout_url='', max_participants=-1, duration=0,
                  dial_number='', welcome=u'Welcome!',
-                 moderator_only_message=u'', meta=u'',
+                 moderator_only_message=u'', meta={},
                  record=False, auto_start_recording=False,
                  allow_start_stop_recording=True,
                  pre_upload_slide=None
@@ -113,23 +113,20 @@ class MeetingSetup(object):
                                                   "welcome": self.welcome})
 
             voicebridge = 70000 + random.randint(0, 9999)
-            query = urlencode((
-                ('name', self.meeting_name),
-                ('meetingID', self.meeting_id),
-                ('attendeePW', self.attendee_password),
-                ('moderatorPW', self.moderator_password),
-                ('voiceBridge', voicebridge),
-                ('dialNumber', self.dial_number),
-                ('welcome', self.welcome),
-                ('logoutURL', self.logout_url),
-                ('maxParticipants', self.max_participants),
-                ('duration', self.duration),
-                ('record', self.record),
-                ('meta', self.meta),
-                ('moderatorOnlyMessage', self.moderator_only_message),
-                ('autoStartRecording', self.auto_start_recording),
-                ('allowStartStopRecording', self.allow_start_stop_recording),
-            ))
+            params = dict(name=self.meeting_name, meetingID=self.meeting_id,
+                      attendeePW=self.attendee_password, moderatorPW=self.moderator_password,
+                      voiceBridge=voicebridge, dialNumber=self.dial_number,
+                      welcome=self.welcome, logoutURL=self.logout_url,
+                      maxParticipants=self.max_participants, duration=self.duration,
+                      record=self.record, moderatorOnlyMessage=self.moderator_only_message,
+                      autoStartRecording=self.auto_start_recording,
+                      allowStartStopRecording=self.allow_start_stop_recording)
+      
+            if self.meta:
+                for k, v in self.meta.iteritems():
+                    meta_key = "meta_%s" % k
+                    params.update({meta_key: v})
+            query = urlencode((params))
             xml = yield get_xml(self.bbb_api_url, self.salt, call, query,
                                 self.pre_upload_slide)
             if xml is not None:
@@ -320,20 +317,29 @@ class Meeting(object):
             defer.returnValue(None)
 
     @defer.inlineCallbacks
-    def get_recordings(self, meeting_id):
+    def get_recordings(self, meeting_id=u'', meta={}):
         """
         Retrieves the recordings that are available for playback for a given meetingID (or set of meeting IDs).
 
         :param meetingID: The meeting ID that identifies the meeting
+        :param meta: You can pass one or more metadata values to filter the recordings returned
         """
         call = 'getRecordings'
-        query = urlencode((
-            ('meetingID', meeting_id),
-        ))
+        params = {}
+        if meeting_id:
+            params.update(dict(meetingID=meeting_id))
+        if meta:
+            for k, v in meta.iteritems():
+                meta_key = "meta_%s" % k
+                params.update({meta_key: v})
+        if params:
+            query = urlencode((params))
+        else:
+            query = ''
         xml = yield get_xml(self.bbb_api_url, self.salt, call, query)
         # ToDO implement more keys
         if xml is not None:
-            recordings = xml.find('recording')
+            recordings = xml.find('recordings')
             records = []
             for meeting in recordings.getchildren():
                 record = {}
