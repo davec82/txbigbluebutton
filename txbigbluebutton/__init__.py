@@ -29,7 +29,7 @@ class MeetingSetup(object):
                  moderator_password=None,
                  logout_url='', max_participants=-1, duration=0,
                  dial_number='', welcome=u'Welcome!',
-                 moderator_only_message=u'', meta={},
+                 moderator_only_message=u'', meta=None,
                  record=False, auto_start_recording=False,
                  allow_start_stop_recording=True,
                  pre_upload_slide=None
@@ -317,7 +317,7 @@ class Meeting(object):
             defer.returnValue(None)
 
     @defer.inlineCallbacks
-    def get_recordings(self, meeting_id=u'', meta={}):
+    def get_recordings(self, meeting_id=u'', meta=None):
         """
         Retrieves the recordings that are available for playback for a given meetingID (or set of meeting IDs).
 
@@ -348,7 +348,16 @@ class Meeting(object):
                 record['meeting_name'] = meeting.find('name').text
                 record['published'] = meeting.find('published').text == "true"
                 record['start_time'] = meeting.find('startTime').text
+                record['name'] = meeting.find('name').text
                 record['end_time'] = meeting.find('endTime').text
+                metadata = meeting.find('metadata')
+                for data in list(metadata):
+                    record[data.tag] = data.text
+                record['size'] = meeting.find('size').text
+                playback = meeting.find('playback')
+                play_format = playback.find('format')
+                record['length'] = play_format.find('length').text
+                record['url'] = play_format.find('url').text
                 records.append(record)
             defer.returnValue(records)
         else:
