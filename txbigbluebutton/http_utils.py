@@ -64,5 +64,9 @@ def httpRequest(url, values=None, headers=None, method='POST'):
             response.deliverBody(SimpleReceiver(d))
         return d
 
+    def failure(err):
+        err.printTraceback()
+
     d.addCallback(handle_response)
+    d.addErrback(failure)
     return d
