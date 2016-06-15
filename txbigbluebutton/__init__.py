@@ -341,7 +341,7 @@ class Meeting(object):
         if xml is not None:
             recordings = xml.find('recordings')
             records = []
-            for meeting in recordings.getchildren():
+            for meeting in list(recordings):
                 record = {}
                 record['record_id'] = meeting.find('recordID').text
                 record['meeting_id'] = meeting.find('meetingID').text
