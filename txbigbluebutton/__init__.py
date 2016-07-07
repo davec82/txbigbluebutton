@@ -235,7 +235,7 @@ class Meeting(object):
             defer.returnValue(None)
 
     @defer.inlineCallbacks
-    def meeting_info(self, meeting_id, password):
+    def meeting_info(self, meeting_id, password, meta=False):
         """
         This call will return all of a meeting's information,
         including the list of attendees as well as start and end times.
@@ -260,6 +260,11 @@ class Meeting(object):
                     user['name'] = attendee.find('fullName').text
                     user['role'] = attendee.find('role').text
                     users.append(user)
+            metadata_dict = {}
+            if meta:
+                metadata = xml.find('metadata')
+                for data in list(metadata):
+                    metadata_dict[data.tag] = data.text
 
             meeting_info = {
                 'meeting_name': xml.find('meetingName').text,
@@ -279,12 +284,14 @@ class Meeting(object):
                 'moderator_count': int(xml.find('moderatorCount').text),
                 'users': users
             }
+            if meta and metadata_dict:
+                meeting_info.update(metadata_dict)
             defer.returnValue(meeting_info)
         else:
             defer.returnValue(None)
 
     @defer.inlineCallbacks
-    def get_meetings(self):
+    def get_meetings(self, meta=False):
         """
         This call will return a list of all the meetings found on this server.
         """
@@ -301,7 +308,7 @@ class Meeting(object):
             for meeting in meetings:
                 meeting_id = meeting.find('meetingID').text
                 password = meeting.find('moderatorPW').text
-                info = yield self.meeting_info(meeting_id, password)
+                info = yield self.meeting_info(meeting_id, password, meta=meta)
                 all_meetings.append({
                     'name': meeting_id,
                     'moderator_pw': password,
