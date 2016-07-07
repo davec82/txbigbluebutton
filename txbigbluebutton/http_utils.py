@@ -49,9 +49,9 @@ class SimpleReceiver(protocol.Protocol):
         self.d.callback(self.buf)
 
 
-def httpRequest(url, values=None, headers=None, method='POST'):
+def httpRequest(url, values=None, headers=None, method='POST', timeout=1):
 
-    agent = Agent(reactor)
+    agent = Agent(reactor, connectTimeout=timeout)
     data = values
     d = agent.request(method, url, Headers(headers) if headers else None,
                       StringProducer(data) if data else None)
