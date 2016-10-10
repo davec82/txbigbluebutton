@@ -14,6 +14,11 @@
 
 """
 import random
+try:
+    import ujson as json
+except ImportError:
+    import json
+
 from urllib import urlencode
 from txbigbluebutton.utils import api_call, get_xml, xml_match
 from twisted.internet import defer
@@ -125,7 +130,7 @@ class MeetingSetup(object):
             if self.meta:
                 for k, v in self.meta.iteritems():
                     meta_key = "meta_%s" % k
-                    params.update({meta_key: v})
+                    params.update({meta_key: json.dumps(v)})
             query = urlencode((params))
             xml = yield get_xml(self.bbb_api_url, self.salt, call, query,
                                 self.pre_upload_slide)
@@ -264,7 +269,7 @@ class Meeting(object):
             if meta:
                 metadata = xml.find('metadata')
                 for data in list(metadata):
-                    metadata_dict[data.tag] = data.text
+                    metadata_dict[data.tag] = json.loads(data.text)
 
             meeting_info = {
                 'meeting_name': xml.find('meetingName').text,
@@ -338,7 +343,7 @@ class Meeting(object):
         if meta:
             for k, v in meta.iteritems():
                 meta_key = "meta_%s" % k
-                params.update({meta_key: v})
+                params.update({meta_key: json.dumps(v)})
         if params:
             query = urlencode((params))
         else:
@@ -359,7 +364,7 @@ class Meeting(object):
                 record['end_time'] = meeting.find('endTime').text
                 metadata = meeting.find('metadata')
                 for data in list(metadata):
-                    record[data.tag] = data.text
+                    record[data.tag] = json.loads(data.text)
                 record['size'] = meeting.find('size').text
                 playback = meeting.find('playback')
                 play_format = playback.find('format')
