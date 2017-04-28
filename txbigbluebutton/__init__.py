@@ -37,7 +37,8 @@ class MeetingSetup(object):
                  moderator_only_message=u'', meta=None,
                  record=False, auto_start_recording=False,
                  allow_start_stop_recording=True,
-                 pre_upload_slide=None
+                 pre_upload_slide=None,
+                 voice_bridge=''
                  ):
         """
         :param bbb_api_url: The url to your bigbluebutton instance (including the api/)
@@ -102,6 +103,7 @@ class MeetingSetup(object):
         self.allow_start_stop_recording = allow_start_stop_recording
         self.auto_start_recording = auto_start_recording
         self.pre_upload_slide = pre_upload_slide
+        self.voice_bridge = voice_bridge
 
     @defer.inlineCallbacks
     def create_meeting(self):
@@ -117,7 +119,11 @@ class MeetingSetup(object):
                             '<br> %(welcome)s' % {"url": self.pre_upload_slide,
                                                   "welcome": self.welcome})
 
-            voicebridge = 70000 + random.randint(0, 9999)
+            if not self.voice_bridge:
+                voicebridge = 70000 + random.randint(0, 9999)
+            else:
+                voicebridge = self.voice_bridge
+
             params = dict(name=self.meeting_name, meetingID=self.meeting_id,
                       attendeePW=self.attendee_password, moderatorPW=self.moderator_password,
                       voiceBridge=voicebridge, dialNumber=self.dial_number,
