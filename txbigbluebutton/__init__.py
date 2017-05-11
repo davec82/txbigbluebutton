@@ -20,7 +20,7 @@ except ImportError:
     import json
 
 from urllib import urlencode
-from txbigbluebutton.utils import api_call, get_xml, xml_match
+from txbigbluebutton.utils import api_call, get_xml, xml_match, decode_json
 from twisted.internet import defer
 
 
@@ -275,7 +275,7 @@ class Meeting(object):
             if meta:
                 metadata = xml.find('metadata')
                 for data in list(metadata):
-                    metadata_dict[data.tag] = json.loads(data.text)
+                    metadata_dict[data.tag] = decode_json(data.text)
 
             meeting_info = {
                 'meeting_name': xml.find('meetingName').text,
@@ -334,6 +334,7 @@ class Meeting(object):
         else:
             defer.returnValue(None)
 
+
     @defer.inlineCallbacks
     def get_recordings(self, meeting_id=u'', meta=None):
         """
@@ -369,14 +370,18 @@ class Meeting(object):
                 record['name'] = meeting.find('name').text
                 record['end_time'] = meeting.find('endTime').text
                 metadata = meeting.find('metadata')
-                for data in list(metadata):
-                    record[data.tag] = json.loads(data.text)
-                record['size'] = meeting.find('size').text
+                if metadata is not None:
+                    for data in list(metadata):
+                        record[data.tag] = decode_json(data.text)
+                size = meeting.find('size')
+                if size is not None:
+                    record['size'] = meeting.find('size').text
                 playback = meeting.find('playback')
                 play_format = playback.find('format')
                 record['length'] = play_format.find('length').text
                 record['url'] = play_format.find('url').text
                 records.append(record)
+
             defer.returnValue(records)
         else:
             defer.returnValue(None)

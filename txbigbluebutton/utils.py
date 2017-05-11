@@ -11,10 +11,23 @@
 """
 
 import xml.etree.ElementTree as ET
+try:
+    import ujson as json
+except ImportError:
+    import json
+
 
 from hashlib import sha1
 from twisted.internet import defer
 from txbigbluebutton.http_utils import httpRequest
+
+
+def decode_json(value):
+        try:
+            decoded_value = json.loads(value)
+        except Exception as e:
+            decoded_value = value
+        return decoded_value
 
 
 def parse(response):
